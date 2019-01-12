@@ -7,3 +7,7 @@
 1. 引入`css`文件要使用`style-loader`以及`css-loader`。loader会处理代码中的相对路径，转换为最初输出的路径。
 2. 引入`图片`、`字体`文件要使用`file-loader`。
 3. 引入`数据`文件（比如csv，xml格式）使用`csv-loader`以及`xml-loader`。
+
+### 管理输出
+
+1. 动态输出打包文件的名字
