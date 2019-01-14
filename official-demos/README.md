@@ -41,5 +41,38 @@ HMR从下面几个方面加速开发过程：
     1. 更新`webpack-dev-server`的配置
     2. 使用webpack内置的HMR插件
 
+2. 通过Node.js API
 
-continue...(看到这里：https://webpack.docschina.org/guides/hot-module-replacement/#%E9%80%9A%E8%BF%87-node-js-api)
+第一步：当使用webpack dev server和Node.js API时，不要将dev server选项放在webpack配置对象中。而是，在创建选项时，将其作为第二个参数传递，例如：
+
+```js
+new WebpackDevServer(compiler, options);
+```
+
+第二步：想要启用HMR，还需要修改webpack配置对象，使其包含HMR入口起点。可以使用`webpack-dev-server`的`addDevServerEntrypoints`的方法来实现。
+
+3. HMR修改样式表
+
+借助`style-loader`的帮助。
+
+### tree shaking
+
+这个东西就是在生产环境下去掉未引入的代码。
+
+任何导入的文件都会受到tree shaking的影响。这意味着，如果在项目中使用类似`css-loader`，并导入css文件，则需要将其添加到side effect列表中，以免在生产模式中无意将它删除。
+
+将包含副作用的模块写入package.json中的sideEffects中：
+
+```js
+{
+    "name": "your-project",
+    "sideEffects": [
+        "./src/some-side-effectful-file.js",
+        "*.css"
+    ]
+}
+```
+
+压缩输出：
+
+将`mode`设为`production`，自动开启`UglifyJsPlugin`插件。
