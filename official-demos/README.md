@@ -75,4 +75,28 @@ new WebpackDevServer(compiler, options);
 
 压缩输出：
 
-将`mode`设为`production`，自动开启`UglifyJsPlugin`插件。
+将`mode`设为`production`，自动开启`UglifyJsPlug。
+
+**感觉这里说的不清楚啊，下一个demo练习里还要明确写明`UglifyJsPlug`，到底是怎么回事？！这个guide行不行啊？概念讲不清楚，配置讲的没逻辑。**
+
+### 生产环境构建
+
+开发环境和生产环境的构建目标差异很大。在开发环境中，我们需要 **具有强大的、具有实时重新加载（live reloading）或热模块替换（hot module replacement）能力的source map和localhost server。**而在生产环境中，我的目标则转向于 **关注更小的bundle，更轻量的source map，以及更优化的资源，以改善加载时间。**由于要遵循逻辑分离，我们通常为每个环境编写彼此独立的webpack配置。
+
+使用`webpack-merge`将`webpack.config.js`分为`webpack.common.js`、`webpack.dev.js`以及`webpack.prod.js`三个文件。
+
+1. 根据环境写不同的webpack配置文件
+2. 进行代码压缩，注意选定的插件要具有tree shaking的功能
+3. source map，在生产模式中，这个配置值和开发模式中用的不一样，避免在生产环境中使用`inline-`，`eval-`，因为这两个设置会增加bundle的大小，会降低整体性能。
+4. 制定环境，使用webpack内置的`DefinePlugin`插件为所有的依赖定义这个变量。比如使用react这样的库，在添加此`DefinePlugin`插件后，可以看到bundle文件的大小显著下降。
+
+另外，任何位于`/src`的本地代码都可以关联到`process.env.NODE_ENV`环境变量，所以可以用来检查一下是否有效，使用下面这种代码：
+
+```js
+// 在.js文件中使用下面的代码
+
+if (process.env.NODE_ENV !== 'production') {
+    console.log('Looks like we are in development mode!');
+}
+```
+5. 压缩css文件，见这里：https://webpack.js.org/plugins/mini-css-extract-plugin/#minimizing-for-production
