@@ -100,3 +100,29 @@ if (process.env.NODE_ENV !== 'production') {
 }
 ```
 5. 压缩css文件，见这里：https://webpack.js.org/plugins/mini-css-extract-plugin/#minimizing-for-production
+
+
+### 代码分离
+
+方法：
+
+1. 入口文件：在入口处手动写明不同的要加载的文件
+
+这种方法造成的问题是：
+
+   1. 如果入口chunks之间包含重复的模块，那些重复模块都会被引入到各个bundle中。
+   2. 这种方法不够灵活，并且不能将核心应用程序逻辑进行动态拆分代码。
+
+2. 使用代码分离插件
+
+`SplitChunks`能够将库代码分离到单独的一个`chunk`（要再看一下chunk的含义）中。这个插件不需要单独安装，使用时，在配置文件中使用下面的代码进行配置：
+
+```js
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
+  }
+```
+
+3. 使用动态导入
