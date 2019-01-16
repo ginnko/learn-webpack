@@ -126,3 +126,40 @@ if (process.env.NODE_ENV !== 'production') {
 ```
 
 3. 使用动态导入
+
+这个guide讲的好糙啊...
+
+### 按需加载
+
+按需加载，是一种很好的优化网页或应用的方式。这种方式实际上是先把你的代码在一些 **逻辑断点处** 分离开，然后在一些代码块中完成某些操作后，立即引用或即将引用另外一些新的代码块。这样加快了应用的初始加载速度，减轻了它的总体体积，因为某些代码块可能永远不会被加载。
+
+在配置中并没有做什么特殊的处理，只是在写代码的时候使用了引入的方式，比如下面的代码：
+
+```js
+  button.onclick = e => import(/* webpackChunkName: "print" */ './print').then(
+    module => {
+      const print = module.default;//这里要注意一下这个写法
+      print();
+    }
+  );
+```
+
+使用这种写法就能实现按需加载。
+
+### caching
+
+在`webpack.config.js`中加入下面的代码：
+
+```js
+  optimization: {
+    runtimeChunk: 'single'
+  }
+```
+
+下面这段关于`runtimeChunk`的解释引自[这里](https://segmentfault.com/q/1010000014954264)。
+
+>优化持久化缓存的, runtime 指的是 webpack 的运行环境(具体作用就是模块解析, 加载) 和 模块信息清单, 模块信息清单在每次有模块变更(hash 变更)时都会变更, 所以我们想把这部分代码单独打包出来, 配合后端缓存策略, 这样就不会因为某个模块的变更导致包含模块信息的模块(通常会被包含在最后一个 bundle 中)缓存失效. optimization.runtimeChunk 就是告诉 webpack 是否要把这部分单独打包出来。
+
+配合第三方库的单独打包，可以优化长效缓存。
+
+guide推荐使用`HashedModuleIdsPlugin`这个插件来保证`vendor`的hash在其他文件修改的情况下不改变。但事实是，即使没有使用这个插件，本地重新构建时，`vendor`这个文件的hash也没有改变。加了以后好像还是会有变化，总之这个用到的时候要查一下。
