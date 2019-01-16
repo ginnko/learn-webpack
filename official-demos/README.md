@@ -148,6 +148,16 @@ if (process.env.NODE_ENV !== 'production') {
 
 ### caching
 
+1. 给每个文件附上hash值
+
+在`webpack.config.js`的输出字段中填上下面的代码：
+
+```js
+filename: '[name].[chunkhash].js'
+```
+
+2. 将`runtimeChunk`单独打包
+
 在`webpack.config.js`中加入下面的代码：
 
 ```js
@@ -161,5 +171,9 @@ if (process.env.NODE_ENV !== 'production') {
 >优化持久化缓存的, runtime 指的是 webpack 的运行环境(具体作用就是模块解析, 加载) 和 模块信息清单, 模块信息清单在每次有模块变更(hash 变更)时都会变更, 所以我们想把这部分代码单独打包出来, 配合后端缓存策略, 这样就不会因为某个模块的变更导致包含模块信息的模块(通常会被包含在最后一个 bundle 中)缓存失效. optimization.runtimeChunk 就是告诉 webpack 是否要把这部分单独打包出来。
 
 配合第三方库的单独打包，可以优化长效缓存。
+
+3. 给不应该变得包附加封印
+
+*感觉教程这里说的有问题*
 
 guide推荐使用`HashedModuleIdsPlugin`这个插件来保证`vendor`的hash在其他文件修改的情况下不改变。但事实是，即使没有使用这个插件，本地重新构建时，`vendor`这个文件的hash也没有改变。加了以后好像还是会有变化，总之这个用到的时候要查一下。
